@@ -1,5 +1,7 @@
 import React, {useState}from "react";
 import { Button, TextField } from "@material-ui/core";
+import { apiCall } from "../../utility";
+import { useHistory } from "react-router-dom";
 
 
 export default function Login() {
@@ -7,19 +9,24 @@ export default function Login() {
 const [email,setEmail]=useState('');
 const [password,setPassword]=useState('');
 
+const history=useHistory();
+
+
 
 
   const registeredUser=async ()=>{
-        const res=await fetch('http://localhost:5500/api/login',{
-              method: 'POST',
-              headers: {'Content-Type': 'application/json'},
-              body:JSON.stringify({
-                email,
-                password
-              })
-        }).then(e=>e.json())
+        const res=await apiCall('/api/login',{email,password});
 
-        console.log(res);
+      //  console.log(res);
+
+      
+      if(res.status==='ok'){
+        console.log('You are in')
+        localStorage.setItem('data',res.data);
+        history.push('/chat');
+      }else{
+        console.log(res.error)
+      }
   }
 
   return (
