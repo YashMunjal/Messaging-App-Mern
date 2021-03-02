@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-
+import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose';
 import User from './model/userSchema'
 
@@ -25,10 +25,14 @@ const connectDB = async () => {
 };
 connectDB();
 
+
+
+
 if (process.env.NODE_ENV !== 'production') {
     app.use(cors());
 }
 
+const JWT_SECRET_TOKEN= '97dqt1tr97qydyuhdfasfhasbb@@jasncc..1111'
 
 app.get('/', (req, res) => {
 
@@ -36,10 +40,18 @@ app.get('/', (req, res) => {
 })
 app.post('/api/register', async (req, res) => {
 
-    if(!req.body.email || !req.body.password) {
+    const {email, password} =req.body;
+
+    if(!email || !password) {
         return res.json({status:'error',error:'Invalid Mail'})
     }
-    var user = new User();
+
+    var user=await User.findOne( {email});
+
+    if(user)
+        return res.json({status:'error',error:'User already exists'})
+
+    user = new User();
     user.email = req.body.email;
     user.password = req.body.password;
     await user.save(function (err:any) {
@@ -47,7 +59,7 @@ app.post('/api/register', async (req, res) => {
     });
 
     console.log(req.body);
-    return res.json({ status: 'ok' })
+    return res.json({ status: 'ok' ,message:"You can now continue to login"})
 })
 
 app.post('/api/login',async(req,res)=>{
@@ -63,7 +75,11 @@ app.post('/api/login',async(req,res)=>{
         return res.json({status: 'error',error:"Wrong password"})
     }
 
-    return res.json({status:'ok',data:user})
+
+
+    const payload=jwt.sign({email},JWT_SECRET_TOKEN)
+
+    return res.json({status:'ok',data:payload})
 })
 
 
