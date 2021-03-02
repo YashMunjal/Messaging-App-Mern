@@ -1,12 +1,37 @@
-import React from "react";
-import { Button } from "@material-ui/core";
-import {Link} from 'react-router-dom';
+import React, {useState}from "react";
+import { Button, TextField } from "@material-ui/core";
+
 
 export default function Login() {
+
+const [email,setEmail]=useState('');
+const [password,setPassword]=useState('');
+
+
+
+  const registeredUser=async ()=>{
+        const res=await fetch('http://localhost:5500/api/login',{
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body:JSON.stringify({
+                email,
+                password
+              })
+        }).then(e=>e.json())
+
+        console.log(res);
+  }
+
   return (
     <div className="App">
-      <Button variant="contained" component={Link} to="/login">Login</Button>
-      <Button variant="contained" component={Link} to="/register">Register</Button>
+      <div className="form" >
+        <h1>Login</h1>
+        <form>
+          <TextField placeholder="Type Email here"  label="Your Email" value={email} onChange={e=>setEmail(e.target.value)} variant="outlined"></TextField>
+          <TextField placeholder="Type Password here"  type="password" label="Your Password" value={password} onChange={e=>setPassword(e.target.value)} variant="outlined"></TextField>
+          <Button variant="contained" color="primary" onClick={registeredUser} >Submit</Button>
+        </form>
+      </div>
     </div>
   );
 }

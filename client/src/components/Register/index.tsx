@@ -19,7 +19,8 @@ const [password,setPassword]=useState('');
               })
         }).then(e=>e.json())
 
-        console.log(res);
+      if(res.status==='ok')
+        console.log('You are in')
   }
 
   return (

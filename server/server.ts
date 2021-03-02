@@ -47,10 +47,24 @@ app.post('/api/register', async (req, res) => {
     });
 
     console.log(req.body);
-    res.json({ status: 'ok' })
+    return res.json({ status: 'ok' })
 })
 
+app.post('/api/login',async(req,res)=>{
+    const {email,password} = req.body;
+    console.log(req.body);
 
+    const user=await User.findOne({ email})
+
+    if(!user){
+        return res.json({status: 'error',error:"User doesn't exist"})
+    }
+    if(user.password!==password){
+        return res.json({status: 'error',error:"Wrong password"})
+    }
+
+    return res.json({status:'ok',data:user})
+})
 
 
 
